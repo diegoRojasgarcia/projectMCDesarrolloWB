@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProyectoInput } from '../dto/create-proyecto.input';
-import { UpdateProyectoInput } from '../dto/update-proyecto.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Proyecto } from '../entities/proyecto.entity';
 import { Repository } from 'typeorm';
+import { getProyectoInput } from '../dto/getproyect.input';
 
 @Injectable()
 export class ProyectoService {
@@ -33,11 +33,24 @@ export class ProyectoService {
 
   async findProyectoByUserId(id: number) {
     const proyectos = this.findAll();
-    const equiposbyProyecto = (await proyectos).filter(
+    const proyectobyidAdmin = (await proyectos).filter(
       (proyecto) => proyecto.idAdmin === id,
     );
-    if (!equiposbyProyecto) return [];
-    return equiposbyProyecto;
+    if (!proyectobyidAdmin) return [];
+    return proyectobyidAdmin;
+  }
+
+  async findProyecto({ idUser, nombre }: getProyectoInput) {
+    const proyectos = this.findAll();
+    const proyectobyidUser = (await proyectos).filter(
+      (proyecto) => proyecto.idAdmin === idUser,
+    );
+    if (!proyectobyidUser) return [];
+    const proyectosbyName = proyectobyidUser.filter(
+      (proyecto) => proyecto.nombre === nombre,
+    );
+    if (!proyectosbyName) return [];
+    return proyectosbyName;
   }
 
   // update(id: number, updateProyectoInput: UpdateProyectoInput) {

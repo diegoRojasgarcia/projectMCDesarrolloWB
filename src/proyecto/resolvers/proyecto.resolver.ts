@@ -9,6 +9,7 @@ import {
 import { ProyectoService } from '../services/proyecto.service';
 import { Proyecto } from '../entities/proyecto.entity';
 import { CreateProyectoInput } from '../dto/create-proyecto.input';
+import { getProyectoInput } from '../dto/getproyect.input';
 
 @Resolver(() => Proyecto)
 export class ProyectoResolver {
@@ -29,6 +30,13 @@ export class ProyectoResolver {
   @Query(() => [Proyecto])
   getProyectosbyUserId(@Args('id', { type: () => Int }) id: number) {
     return this.proyectoService.findProyectoByUserId(id);
+  }
+
+  @Query(() => [Proyecto])
+  getProyectobyUserIdName(
+    @Args('getProyectoInput') getProyectoInput: getProyectoInput,
+  ) {
+    return this.proyectoService.findProyecto(getProyectoInput);
   }
 
   // @Query(() => Proyecto, { name: 'proyecto' })
