@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateProyectoInput } from '../dto/create-proyecto.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Proyecto } from '../entities/proyecto.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { getProyectoInput } from '../dto/getproyect.input';
+import { findProyectoLikeDto } from '../dto/findproyect';
 
 @Injectable()
 export class ProyectoService {
@@ -20,10 +21,11 @@ export class ProyectoService {
   }
 
   async findAll(): Promise<Proyecto[]> {
-    return this.proyectoRepository.find();
+    return this.proyectoRepository.find({ order: { nombre: 'ASC' } });
   }
 
-  async findOne(id: number): Promise<Proyecto> {
+  async findOne(getProyectosbyIdDto): Promise<Proyecto> {
+    const { id } = getProyectosbyIdDto;
     return this.proyectoRepository.findOne({
       where: {
         id,
@@ -31,26 +33,35 @@ export class ProyectoService {
     });
   }
 
-  async findProyectoByUserId(id: number) {
+  async findProyectoId(getProyectosbyIdDto): Promise<Proyecto> {
+    const { id } = getProyectosbyIdDto;
+    return this.proyectoRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findProyectoLike({
+    idUser,
+    nombre,
+  }: getProyectoInput): Promise<Proyecto[]> {
+    return this.proyectoRepository.find({
+      where: {
+        nombre: Like(`%${nombre}%`),
+        idAdmin: idUser,
+      },
+    });
+  }
+
+  async findProyectoByUserId(getProyectosbyUserIdDto): Promise<Proyecto[]> {
+    const { id } = getProyectosbyUserIdDto;
     const proyectos = this.findAll();
     const proyectobyidAdmin = (await proyectos).filter(
       (proyecto) => proyecto.idAdmin === id,
     );
     if (!proyectobyidAdmin) return [];
     return proyectobyidAdmin;
-  }
-
-  async findProyecto({ idUser, nombre }: getProyectoInput) {
-    const proyectos = this.findAll();
-    const proyectobyidUser = (await proyectos).filter(
-      (proyecto) => proyecto.idAdmin === idUser,
-    );
-    if (!proyectobyidUser) return [];
-    const proyectosbyName = proyectobyidUser.filter(
-      (proyecto) => proyecto.nombre === nombre,
-    );
-    if (!proyectosbyName) return [];
-    return proyectosbyName;
   }
 
   // update(id: number, updateProyectoInput: UpdateProyectoInput) {

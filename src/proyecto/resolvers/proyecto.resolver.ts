@@ -10,6 +10,9 @@ import { ProyectoService } from '../services/proyecto.service';
 import { Proyecto } from '../entities/proyecto.entity';
 import { CreateProyectoInput } from '../dto/create-proyecto.input';
 import { getProyectoInput } from '../dto/getproyect.input';
+import { BadRequestException } from '@nestjs/common';
+import { getProyectosbyIdDto } from '../dto/getpoyectoById';
+import { getProyectosbyUserIdDto } from '../dto/getproyectoByUserId';
 
 @Resolver(() => Proyecto)
 export class ProyectoResolver {
@@ -23,20 +26,45 @@ export class ProyectoResolver {
   }
 
   @Query(() => [Proyecto])
-  getProyectos() {
-    return this.proyectoService.findAll();
+  getProyectos(): Promise<Proyecto[]> {
+    try {
+      return this.proyectoService.findAll();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  @Query(() => Proyecto)
+  getProyectosbyId(
+    @Args('getProyectosbyIdinput') data: getProyectosbyIdDto,
+  ): Promise<Proyecto> {
+    try {
+      return this.proyectoService.findProyectoId(data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   @Query(() => [Proyecto])
-  getProyectosbyUserId(@Args('id', { type: () => Int }) id: number) {
-    return this.proyectoService.findProyectoByUserId(id);
+  getProyectosbyUserId(
+    @Args('getProyectosbyUserInput') data: getProyectosbyUserIdDto,
+  ): Promise<Proyecto[]> {
+    try {
+      return this.proyectoService.findProyectoByUserId(data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   @Query(() => [Proyecto])
   getProyectobyUserIdName(
     @Args('getProyectoInput') getProyectoInput: getProyectoInput,
-  ) {
-    return this.proyectoService.findProyecto(getProyectoInput);
+  ): Promise<Proyecto[]> {
+    try {
+      return this.proyectoService.findProyectoLike(getProyectoInput);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   // @Query(() => Proyecto, { name: 'proyecto' })

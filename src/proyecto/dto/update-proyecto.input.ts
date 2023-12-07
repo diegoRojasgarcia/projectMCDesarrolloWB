@@ -1,8 +1,7 @@
-import { CreateProyectoInput } from './create-proyecto.input';
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateProyectoInput extends PartialType(CreateProyectoInput) {
+export class UpdateProyectoInput {
   @Field(() => Int)
   id: number;
 }
