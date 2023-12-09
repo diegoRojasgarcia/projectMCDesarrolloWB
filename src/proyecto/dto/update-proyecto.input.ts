@@ -1,7 +1,10 @@
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateProyectoInput {
-  @Field(() => Int)
-  id: number;
+export class updateProyectoDto {
+  @Field({ nullable: true })
+  nombre: string;
+
+  @Field({ nullable: true })
+  area: string;
 }

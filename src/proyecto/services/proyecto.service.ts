@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Proyecto } from '../entities/proyecto.entity';
 import { Like, Repository } from 'typeorm';
 import { getProyectoInput } from '../dto/getproyect.input';
-import { findProyectoLikeDto } from '../dto/findproyect';
+import { updateProyectoDto } from '../dto/update-proyecto.input';
+import { FindProyectoByIdInput } from '../dto/findProyectById.input';
 
 @Injectable()
 export class ProyectoService {
@@ -64,13 +65,38 @@ export class ProyectoService {
     return proyectobyidAdmin;
   }
 
-  // update(id: number, updateProyectoInput: UpdateProyectoInput) {
-  //   return `This action updates a #${id} proyecto`;
-  // }
+  async update(
+    findProyectoByIdInput: FindProyectoByIdInput,
+    updateProyectoDto: updateProyectoDto,
+  ) {
+    const { id } = findProyectoByIdInput;
+    const { nombre, area } = updateProyectoDto;
+    const proyectoDB = await this.proyectoRepository.preload({
+      id: id,
+      ...updateProyectoDto,
+    });
+    try {
+      await this.proyectoRepository.save(proyectoDB);
+      return proyectoDB;
+    } catch (error) {
+      return error;
+    }
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} proyecto`;
-  // }
+  async remove(findProyectoByIdInput: FindProyectoByIdInput) {
+    const proyectoDB = await this.findProyectoId(findProyectoByIdInput);
+    if (proyectoDB) {
+      try {
+        const proyectodeleted = await this.proyectoRepository.delete(
+          proyectoDB,
+        );
+        return proyectoDB;
+      } catch (error) {
+        return error;
+      }
+    }
+    return null;
+  }
 
   async forAdminId(userId: number) {
     const proyectos = await this.proyectoRepository.find();

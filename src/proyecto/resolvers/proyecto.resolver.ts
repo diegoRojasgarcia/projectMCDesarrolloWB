@@ -13,6 +13,9 @@ import { getProyectoInput } from '../dto/getproyect.input';
 import { BadRequestException } from '@nestjs/common';
 import { getProyectosbyIdDto } from '../dto/getpoyectoById';
 import { getProyectosbyUserIdDto } from '../dto/getproyectoByUserId';
+import { updateProyectoDto } from '../dto/update-proyecto.input';
+import { FindProyectoByIdInput } from '../dto/findProyectById.input';
+import { messageDeteled } from '../dto/messageDeteled.dto';
 
 @Resolver(() => Proyecto)
 export class ProyectoResolver {
@@ -67,25 +70,23 @@ export class ProyectoResolver {
     }
   }
 
-  // @Query(() => Proyecto, { name: 'proyecto' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.proyectoService.findOne(id);
-  // }
+  @Mutation(() => Proyecto)
+  updateProyecto(
+    @Args('findProyectoByIdInput') findProyectoByIdInput: FindProyectoByIdInput,
+    @Args('updateProyectoInput') updateProyectoDto: updateProyectoDto,
+  ): Promise<Proyecto> {
+    return this.proyectoService.update(
+      findProyectoByIdInput,
+      updateProyectoDto,
+    );
+  }
 
-  // @Mutation(() => Proyecto)
-  // updateProyecto(
-  //   @Args('updateProyectoInput') updateProyectoInput: UpdateProyectoInput,
-  // ) {
-  //   return this.proyectoService.update(
-  //     updateProyectoInput.id,
-  //     updateProyectoInput,
-  //   );
-  // }
-
-  // @Mutation(() => Proyecto)
-  // removeProyecto(@Args('id', { type: () => Int }) id: number) {
-  //   return this.proyectoService.remove(id);
-  // }
+  @Mutation(() => Proyecto)
+  removeProyecto(
+    @Args('findProyectoByIdInput') findProyectoByIdInput: FindProyectoByIdInput,
+  ): Promise<Proyecto> {
+    return this.proyectoService.remove(findProyectoByIdInput);
+  }
 
   @ResolveReference()
   resolveReference(reference: { __typename: string; id: number }) {
